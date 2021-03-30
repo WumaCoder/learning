@@ -1,0 +1,10 @@
+import React from "react";
+
+export function BChild({ value = 0, onUpdateValue = (v: number) => null }) {
+  return (
+    <div>
+      <h4>BChild: {value}</h4>
+      <button onClick={(e) => onUpdateValue(value + 1)}>Click!</button>
+    </div>
+  );
+}
