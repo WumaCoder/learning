@@ -1,7 +1,7 @@
-var updates = {};
+var depUpdates = {};
 
 function defineReactive(obj, key, val) {
-  updates[key] = [];
+  depUpdates[key] = [];
   Object.defineProperty(obj, key, {
     get() {
       // console.log("[get]:", key);
@@ -11,7 +11,7 @@ function defineReactive(obj, key, val) {
       if (newVal !== val) {
         // console.log("[set]:", key, newVal);
         val = newVal;
-        updates[key].forEach((update) => update());
+        depUpdates[key].forEach((update) => update());
       }
     },
   });
@@ -63,7 +63,6 @@ function proxy(origin, target) {
       },
       set(v) {
         origin[key] = v;
-        window.up1 && up1();
       },
     });
   });
@@ -99,7 +98,7 @@ class Compile {
       });
     };
     update();
-    updates[RegExp.$1].push(update);
+    depUpdates[RegExp.$1].push(update);
   }
 
   compileElement(node) {
@@ -119,7 +118,7 @@ class Compile {
       node.textContent = this._vm[exp];
     };
     update();
-    updates[exp].push(update);
+    depUpdates[exp].push(update);
   }
 
   isElement(node) {
