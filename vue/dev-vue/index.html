@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <div>Count: {{count}}
+      <div>
+        Count1: {{count1}}
+      </div>
+    </div>
+    <div v-text="count"></div>
+    <div v-text="count"></div>
+  </div>
+  <script src="./vue.js"></script>
+</body>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      count: 0,
+      count1: 2
+    },
+    mounted() {
+      setInterval(() => {
+        console.log(this.count++, this.count1)
+      }, 1000)
+    }
+  })
+</script>
+
+</html>
