@@ -175,6 +175,14 @@ class Compile {
       node.isModel = true;
     }
   }
+  ifDirectiveUpdater(node, updVal, exp, attr) {
+    if (!node.space) node.space = document.createComment("hide:" + exp);
+    if (updVal) {
+      node.space.replaceWith(node);
+    } else {
+      node.replaceWith(node.space);
+    }
+  }
 }
 
 class Watcher {

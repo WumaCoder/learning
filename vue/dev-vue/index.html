@@ -21,7 +21,7 @@
     <div>InputValue: {{inputValue}}</div>
     <input v-model="inputValue1" type="text">
     <div>InputValue1: {{inputValue1}}</div>
-    <input v-model="inputValue1" type="text">
+    <input v-if="isShow" v-model="inputValue1" type="text">
   </div>
   <script src="./vue.js"></script>
 </body>
@@ -33,11 +33,17 @@
       count: 0,
       count1: 2,
       inputValue: 'hello',
-      inputValue1: 'aaaa'
+      inputValue1: 'aaaa',
+      isShow: true
     },
     methods: {
       onInput(e) {
         this.inputValue = e.target.value
+        if (e.target.value == 'hide') {
+          this.isShow = false
+        } else {
+          this.isShow = true
+        }
       }
     },
     mounted() {
