@@ -1,17 +1,18 @@
-var depUpdates = {};
-
 function defineReactive(obj, key, val) {
-  depUpdates[key] = [];
+  const dep = new Dep();
+  obj.__ob__.deps.push(dep);
+
   Object.defineProperty(obj, key, {
     get() {
       // console.log("[get]:", key);
+      Dep.target && dep.addDep(Dep.target);
       return observe(val);
     },
     set(newVal) {
       if (newVal !== val) {
         // console.log("[set]:", key, newVal);
         val = newVal;
-        depUpdates[key].forEach((update) => update());
+        dep.notify();
       }
     },
   });
@@ -27,17 +28,30 @@ function observe(target) {
     return target;
   }
 
-  Object.keys(target).forEach((key) => {
-    defineReactive(target, key, target[key]);
-  });
-
-  Object.defineProperty(target, "__ob__", {
-    enumerable: false,
-    writable: false,
-    value: true,
-  });
+  new Observer(target);
 
   return target;
+}
+
+class Observer {
+  constructor(value) {
+    this.value = value;
+    this.deps = [];
+
+    Object.defineProperty(value, "__ob__", {
+      enumerable: false,
+      writable: false,
+      value: this,
+    });
+
+    this.reactive();
+  }
+
+  reactive() {
+    Object.keys(this.value).forEach((key) => {
+      defineReactive(this.value, key, this.value[key]);
+    });
+  }
 }
 
 class Vue {
@@ -47,7 +61,7 @@ class Vue {
 
     proxy(this.$data, this);
 
-    new Compile(options.el, this);
+    this._compile = new Compile(options.el, this);
 
     options.mounted && options.mounted.call(this);
   }
@@ -71,6 +85,7 @@ function proxy(origin, target) {
 class Compile {
   constructor(el, vm) {
     this._vm = vm;
+    this._watchers = [];
     vm.$el = document.querySelector(el);
 
     if (vm.$el) {
@@ -91,14 +106,7 @@ class Compile {
   }
 
   compileText(node) {
-    const template = node.textContent;
-    const update = () => {
-      node.textContent = template.replace(/{{(.*)}}/gm, (match, exp) => {
-        return this._vm[exp];
-      });
-    };
-    update();
-    depUpdates[RegExp.$1].push(update);
+    this.update("interpolation", node, RegExp.$1);
   }
 
   compileElement(node) {
@@ -107,20 +115,10 @@ class Compile {
       const name = attr.name;
       const exp = attr.value;
       if (this.isDirective(name)) {
-        const fn = this[name.substr(2)].bind(this);
-        fn && fn(node, exp);
+        this.update(name.substr(2) + "Directive", node, exp);
       }
     });
   }
-
-  text(node, exp) {
-    const update = () => {
-      node.textContent = this._vm[exp];
-    };
-    update();
-    depUpdates[exp].push(update);
-  }
-
   isElement(node) {
     return node.nodeType === 1;
   }
@@ -132,18 +130,59 @@ class Compile {
   isDirective(name) {
     return name.startsWith("v-");
   }
+
+  update(type, node, exp) {
+    let updater = this[type + "Updater"];
+    if (updater) {
+      updater = updater.bind(this);
+      updater(node, this._vm[exp], exp);
+      this._watchers.push(
+        new Watcher(this._vm, exp, function () {
+          updater(node, this[exp], exp);
+        })
+      );
+    }
+  }
+
+  interpolationUpdater(node, uptVal, exp) {
+    const template =
+      node.originTextContent || (node.originTextContent = node.textContent);
+    node.textContent = template.replace(/{{(.*)}}/gm, (match, _exp) => {
+      return this._vm[_exp];
+    });
+  }
+
+  textDirectiveUpdater(node, uptVal, exp) {
+    node.textContent = uptVal;
+  }
 }
 
-// var watchers = [];
+class Watcher {
+  constructor(vm, exp, updateFn) {
+    this._vm = vm;
+    this._key = exp;
+    this._updateFn = updateFn;
 
-// class Watcher {
-//   constructor(vm, key, updateFn) {
-//     this._vm = vm;
-//     this._key = key;
-//     this._updateFn = updateFn;
-//   }
+    Dep.target = this;
+    vm[exp];
+    Dep.target = null;
+  }
 
-//   update() {
-//     this._updateFn;
-//   }
-// }
+  update() {
+    this._updateFn.call(this._vm);
+  }
+}
+
+class Dep {
+  constructor() {
+    this.watchers = [];
+  }
+
+  addDep(watcher) {
+    this.watchers.push(watcher);
+  }
+
+  notify() {
+    this.watchers.forEach((w) => w.update());
+  }
+}
