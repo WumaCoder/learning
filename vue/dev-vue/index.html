@@ -17,6 +17,11 @@
     </div>
     <div v-text="count"></div>
     <div v-text="count"></div>
+    <input v-bind:value="inputValue" v-on:input="onInput" type="text">
+    <div>InputValue: {{inputValue}}</div>
+    <input v-model="inputValue1" type="text">
+    <div>InputValue1: {{inputValue1}}</div>
+    <input v-model="inputValue1" type="text">
   </div>
   <script src="./vue.js"></script>
 </body>
@@ -26,11 +31,21 @@
     el: '#app',
     data: {
       count: 0,
-      count1: 2
+      count1: 2,
+      inputValue: 'hello',
+      inputValue1: 'aaaa'
+    },
+    methods: {
+      onInput(e) {
+        this.inputValue = e.target.value
+      }
     },
     mounted() {
       setInterval(() => {
-        console.log(this.count++, this.count1)
+        console.log('count:', this.count++)
+      }, 1000)
+      setInterval(() => {
+        console.log('count1:', this.count1--)
       }, 1000)
     }
   })

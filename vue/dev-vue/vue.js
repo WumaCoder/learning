@@ -60,6 +60,7 @@ class Vue {
     this.$data = observe(options.data);
 
     proxy(this.$data, this);
+    proxy(options.methods, this);
 
     this._compile = new Compile(options.el, this);
 
@@ -115,7 +116,8 @@ class Compile {
       const name = attr.name;
       const exp = attr.value;
       if (this.isDirective(name)) {
-        this.update(name.substr(2) + "Directive", node, exp);
+        const [type, bindAttr] = name.split(":");
+        this.update(type.substr(2) + "Directive", node, exp, bindAttr);
       }
     });
   }
@@ -131,14 +133,14 @@ class Compile {
     return name.startsWith("v-");
   }
 
-  update(type, node, exp) {
+  update(type, node, exp, bindAttr) {
     let updater = this[type + "Updater"];
     if (updater) {
       updater = updater.bind(this);
-      updater(node, this._vm[exp], exp);
+      updater(node, this._vm[exp], exp, bindAttr);
       this._watchers.push(
         new Watcher(this._vm, exp, function () {
-          updater(node, this[exp], exp);
+          updater(node, this[exp], exp, bindAttr);
         })
       );
     }
@@ -154,6 +156,24 @@ class Compile {
 
   textDirectiveUpdater(node, uptVal, exp) {
     node.textContent = uptVal;
+  }
+
+  bindDirectiveUpdater(node, uptVal, exp, attr) {
+    node[attr] = uptVal;
+  }
+
+  onDirectiveUpdater(node, uptVal, exp, attr) {
+    node.addEventListener(attr, uptVal.bind(this._vm));
+  }
+
+  modelDirectiveUpdater(node, updVal, exp, attr) {
+    node.value = updVal;
+    if (!node.isModel) {
+      node.addEventListener("input", (e) => {
+        this._vm[exp] = e.target.value;
+      });
+      node.isModel = true;
+    }
   }
 }
 
