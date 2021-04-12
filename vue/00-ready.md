@@ -37,4 +37,4 @@ cd vue && npm install
 
 现在我们通过 vscode 创建一个 launch.json 文件，具体操作：`侧边栏debug` -> `创建 launch.json` -> `chrome: launch`
 
-然后我们可以在 src 里进行打断点，然后执行刚刚创建的那个命令
+然后我们可以在 src 里进行打断点，然后执行刚刚创建的那个命令，就可以方便的调试了
