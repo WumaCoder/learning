@@ -1,0 +1,43 @@
+src
+├── sfc
+│   └── parser.js
+├── shared
+│   ├── constants.js
+│   └── util.js
+├── platforms
+│   ├── weex
+│   └── web
+├── core
+│   ├── components
+│   ├── global-api
+│   ├── observer
+│   ├── vdom
+│   ├── util
+│   ├── instance
+│   ├── index.js
+│   └── config.js
+├── compiler
+│   ├── codegen
+│   ├── directives
+│   ├── parser
+│   ├── index.js
+│   ├── codeframe.js
+│   ├── create-compiler.js
+│   ├── to-function.js
+│   ├── optimizer.js
+│   ├── error-detector.js
+│   └── helpers.js
+└── server
+    ├── webpack-plugin
+    ├── bundle-renderer
+    ├── template-renderer
+    ├── optimizing-compiler
+    ├── util.js
+    ├── create-basic-renderer.js
+    ├── write.js
+    ├── render-stream.js
+    ├── render-context.js
+    ├── create-renderer.js
+    └── render.js
+
+21 directories, 19 files
