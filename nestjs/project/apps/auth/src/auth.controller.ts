@@ -1,4 +1,4 @@
-import { Controller, Get, UseFilters } from '@nestjs/common';
+import { Controller, Get, Req, UseFilters, UseGuards } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -7,6 +7,7 @@ import {
   RedisContext,
   RpcException,
 } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 import { ExceptionFilter } from 'apps/auth/src/rpc-exception.filter';
 import { AuthService } from './auth.service';
 
@@ -14,14 +15,17 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseFilters(new ExceptionFilter())
-  @MessagePattern('accumulate')
-  accumulate(@Payload() data: number[], @Ctx() ctx: RedisContext): number {
-    console.log({ data, ctx }, ctx.getChannel(), ctx.getArgs());
+  @MessagePattern('validateUser')
+  validateUser(@Payload() loginDto) {
+    console.log('validateUser', loginDto);
 
-    if (data[0] === 0) {
-      throw new RpcException('not 0');
-    }
-    return (data || []).reduce((a, b) => a + b);
+    return this.authService.validateUser(loginDto.username, loginDto.password);
+  }
+
+  @MessagePattern('login')
+  login(@Payload() user) {
+    console.log('visa', user);
+
+    return this.authService.login(user);
   }
 }

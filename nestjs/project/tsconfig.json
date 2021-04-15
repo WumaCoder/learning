@@ -11,6 +11,15 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "paths": {}
+    "paths": {
+      "@app/micro": [
+        "libs/micro/src",
+        "libs/micro/src"
+      ],
+      "@app/micro/*": [
+        "libs/micro/src/*",
+        "libs/micro/src/*"
+      ],
+    }
   }
 }

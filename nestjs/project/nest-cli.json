@@ -34,6 +34,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
+    },
+    "micro": {
+      "type": "library",
+      "root": "libs/micro",
+      "entryFile": "index",
+      "sourceRoot": "libs/micro/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/micro/tsconfig.lib.json"
+      }
     }
   }
 }

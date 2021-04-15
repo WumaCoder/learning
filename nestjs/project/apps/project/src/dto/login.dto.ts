@@ -7,13 +7,17 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { RoleEnum } from '../user/dto/create-user.dto';
 
-export class AppQueryDto {
+export class LoginDto {
   /**
-   * 角色名
+   * 用户名
+   * @example root
    */
-  @IsEnum(RoleEnum)
-  @ApiProperty({ enum: RoleEnum })
-  roleName: RoleEnum = RoleEnum.ADMIN;
+  username: string;
+
+  /**
+   * 密码
+   * @example 123456
+   */
+  password: string;
 }
