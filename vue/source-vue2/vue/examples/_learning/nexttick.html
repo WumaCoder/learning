@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    {{a}}
+  </div>
+</body>
+<script src="../../dist/vue.js"></script>
+<script>
+
+  function bootstrap() {
+    const app = new Vue({
+      name: "Root",
+      el: "#app",
+      data: {
+        a: 0,
+        b: 0
+      },
+      mounted() {
+        debugger
+        this.a = 1
+        this.b = 1
+        debugger
+        this.a = 2
+        this.b = 2
+        this.a = 3
+        this.b = 3
+        debugger
+        this.$nextTick(() => {
+          debugger
+          console.log(this.a)
+        })
+        debugger
+        this.$nextTick(() => {
+          debugger
+          console.log(this.b)
+        })
+        debugger
+      }
+    })
+
+  }
+
+  bootstrap()
+
+</script>
+
+</html>
