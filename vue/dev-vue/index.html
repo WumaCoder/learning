@@ -22,6 +22,10 @@
     <input v-model="inputValue1" type="text">
     <div>InputValue1: {{inputValue1}}</div>
     <input v-if="isShow" v-model="inputValue1" type="text">
+    <button v-on:click="onClick">ADD</button>
+    <div v-for="count1">
+      ArrayItem
+    </div>
   </div>
   <script src="./vue.js"></script>
 </body>
@@ -31,7 +35,7 @@
     el: '#app',
     data: {
       count: 0,
-      count1: 2,
+      count1: [1, 2, 3, 4],
       inputValue: 'hello',
       inputValue1: 'aaaa',
       isShow: true
@@ -44,14 +48,14 @@
         } else {
           this.isShow = true
         }
+      },
+      onClick() {
+        this.count1.push(1)
       }
     },
     mounted() {
       setInterval(() => {
-        console.log('count:', this.count++)
-      }, 1000)
-      setInterval(() => {
-        console.log('count1:', this.count1--)
+        this.count++
       }, 1000)
     }
   })

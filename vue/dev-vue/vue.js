@@ -54,6 +54,18 @@ class Observer {
   }
 }
 
+const ArrayPush = Array.prototype.push;
+Array.prototype.push = function () {
+  console.log(this);
+  const res = ArrayPush.apply(this, arguments);
+
+  // if (this.__ob__) {
+  //   this
+  // }
+
+  return res;
+};
+
 class Vue {
   constructor(options) {
     this.$options = options;
@@ -181,6 +193,25 @@ class Compile {
       node.space.replaceWith(node);
     } else {
       node.replaceWith(node.space);
+    }
+  }
+
+  forDirectiveUpdater(node, updVal, exp, attr) {
+    console.log({ node, updVal, exp, attr });
+    if (!node.wrapper) {
+      node.wrapper = document.createElement("div");
+      node.replaceWith(node.wrapper);
+    }
+    node.wrapper.innerHTML = "";
+
+    if (typeof updVal === "number") {
+      for (let i = 0; i < updVal; i++) {
+        node.wrapper.append(node.cloneNode(true));
+      }
+    } else {
+      updVal.forEach((item) => {
+        node.wrapper.append(node.cloneNode(true));
+      });
     }
   }
 }
