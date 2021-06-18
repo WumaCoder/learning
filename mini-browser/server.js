@@ -6,7 +6,9 @@ app.use(bodyParser.json());
 
 app.post("/", (req, res) => {
   console.log(req.body);
-  res.send("Hello World!");
+  res.write("Hello World!");
+  res.write("你好 世界!");
+  res.end();
 });
 
 app.listen(3000, () => {
